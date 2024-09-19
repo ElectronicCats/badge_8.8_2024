@@ -2890,7 +2890,7 @@
 				)
 			)
 		)
-		(property "Value" "Orange"
+		(property "Value" "Green"
 			(at 182.753 87.884 0)
 			(effects
 				(font
@@ -2925,7 +2925,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC#" "C434437"
+		(property "LCSC#" "C965815"
 			(at 182.88 91.44 0)
 			(effects
 				(font
@@ -3974,7 +3974,7 @@
 				)
 			)
 		)
-		(property "Value" "Green"
+		(property "Value" "Orange"
 			(at 182.6895 58.166 0)
 			(effects
 				(font
@@ -4009,7 +4009,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC#" "C965815"
+		(property "LCSC#" "C434437"
 			(at 182.626 61.722 0)
 			(effects
 				(font
