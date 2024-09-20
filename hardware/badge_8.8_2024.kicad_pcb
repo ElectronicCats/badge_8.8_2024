@@ -4299,6 +4299,7 @@
 			(effects
 				(font
 					(size 0.001 0.001)
+					(thickness 0.15)
 				)
 				(justify mirror)
 			)
@@ -4311,6 +4312,7 @@
 			(effects
 				(font
 					(size 0.001 0.001)
+					(thickness 0.15)
 				)
 				(justify mirror)
 			)
@@ -7178,6 +7180,18 @@
 		)
 		(layer "Edge.Cuts")
 		(uuid "f05e8a19-f8ed-43b4-953a-cf6a8a09f1f1")
+	)
+	(gr_text "https://youtu.be/\ndQw4w9WgXcQ?si=N\n39gOwTvt6YGSlYW"
+		(at 49.67 65.35 0)
+		(layer "B.SilkS")
+		(uuid "e01b7d06-95ed-4e24-b7a2-d255605e62b6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
 	)
 	(segment
 		(start 59.83 65.71)
