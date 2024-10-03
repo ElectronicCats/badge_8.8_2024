@@ -45,9 +45,9 @@ uint8_t sequenceNumber = 1, timesSecretCode = 2, bitNumber = 0;
 uint8_t ledQuantity = 5;          //Set how many LED have your Shitty Addon
 
 // Pin Definition 
-uint32_t ports[] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOF};
-uint8_t pins[] = {0x0040, 0x0020, 0x0002, 0x0080, 0x0001}; // PA6, PA5, PA1, PA7, PF0 - Each Badge have its own order. Indicator=PA6
-uint8_t indicatorPos=0;
+uint32_t ports[] = {GPIOA, GPIOA, GPIOA, GPIOF, GPIOA};
+uint8_t pins[] = {0x0020, 0x0002, 0x0080, 0x0001, 0x0040}; // PA5, PA1, PA7, PF0, PA6  - Each Badge have its own order. Indicator=PA6
+uint8_t indicatorPos=4;
 
 uint8_t message[] = {"8.8"};    //Secret Code
 
@@ -77,7 +77,7 @@ void HEX2NIBBLE()
 void setBits(uint8_t nibble)
 {
   uint8_t nibbleAux = nibble;
-  for (uint8_t i = 1; i < 5; i++)
+  for (uint8_t i = 0; i < 4; i++)
   {
     if (nibbleAux & 0x01) // LED ON
     {
@@ -106,49 +106,81 @@ void blinkBitNumber()
 // Sequence 1
 void crossSequence()
 {
-  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PA5
+  HAL_GPIO_OnPin(ports[0], pins[0]); // Start with PA5
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[0], pins[0]);
+  HAL_GPIO_OnPin(ports[2], pins[2]);
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[2], pins[2]);
+  HAL_GPIO_OnPin(ports[1], pins[1]);
   HAL_Delay(delay2);
   HAL_GPIO_OffPin(ports[1], pins[1]);
   HAL_GPIO_OnPin(ports[3], pins[3]);
   HAL_Delay(delay2);
-  HAL_GPIO_OffPin(ports[3], pins[3]);
-  HAL_GPIO_OnPin(ports[2], pins[2]);
-  HAL_Delay(delay2);
-  HAL_GPIO_OffPin(ports[2], pins[2]);
-  HAL_GPIO_OnPin(ports[4], pins[4]);
-  HAL_Delay(delay2);
-  HAL_GPIO_OffPin(ports[4], pins[4]); // Turn off PF0
+  HAL_GPIO_OffPin(ports[3], pins[3]); // Turn off PF0
   HAL_Delay(delay2);
 }
 
 void crossSequence2()
 {
-  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PF0
-  HAL_GPIO_OnPin(ports[3], pins[3]); // Start with PA7
+  HAL_GPIO_OnPin(ports[0], pins[0]); // Start with PF0
+  HAL_GPIO_OnPin(ports[2], pins[2]); // Start with PA7
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[0], pins[0]);
+  HAL_GPIO_OffPin(ports[2], pins[2]);
+  HAL_GPIO_OnPin(ports[1], pins[1]);
+  HAL_GPIO_OnPin(ports[3], pins[3]);
   HAL_Delay(delay2);
   HAL_GPIO_OffPin(ports[1], pins[1]);
   HAL_GPIO_OffPin(ports[3], pins[3]);
-  HAL_GPIO_OnPin(ports[2], pins[2]);
-  HAL_GPIO_OnPin(ports[4], pins[4]);
-  HAL_Delay(delay2);
-  HAL_GPIO_OffPin(ports[2], pins[2]);
-  HAL_GPIO_OffPin(ports[4], pins[4]);
 }
 
 void followSequence()
 {
-  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PA5
-  HAL_Delay(delay);
+  HAL_GPIO_OnPin(ports[0], pins[0]); // Start with PA5
+  HAL_Delay(delay3);
+  HAL_GPIO_OnPin(ports[1], pins[1]);
+  HAL_GPIO_OnPin(ports[3], pins[3]);
+  HAL_Delay(delay3);
+  HAL_GPIO_OffPin(ports[0], pins[0]); // Turn off PA5
   HAL_GPIO_OnPin(ports[2], pins[2]);
-  HAL_GPIO_OnPin(ports[4], pins[4]);
-  HAL_Delay(delay);
+  HAL_Delay(delay3);
   HAL_GPIO_OffPin(ports[1], pins[1]); // Turn off PA5
+  HAL_GPIO_OffPin(ports[3], pins[3]);
+  HAL_Delay(delay3);
+  HAL_GPIO_OffPin(ports[2], pins[2]); // Turn off PA7
+  HAL_Delay(delay3);
+  //Reverse
+  /*HAL_GPIO_OnPin(ports[2], pins[2]); // Start with PA7
+  HAL_Delay(delay3);
+  HAL_GPIO_OnPin(ports[1], pins[1]);
+  HAL_GPIO_OnPin(ports[3], pins[3]);
+  HAL_Delay(delay3);
+  HAL_GPIO_OffPin(ports[2], pins[2]); 
+  HAL_GPIO_OnPin(ports[0], pins[0]);
+  HAL_Delay(delay3);
+  HAL_GPIO_OffPin(ports[1], pins[1]); 
+  HAL_GPIO_OffPin(ports[3], pins[3]);
+  HAL_Delay(delay3);
+  HAL_GPIO_OffPin(ports[0], pins[0]); // Turn off PA5
+  HAL_Delay(delay2);*/
+}
+
+void fastFlash()
+{
+  HAL_GPIO_OnPin(ports[0], pins[0]); // Start with PA5
+  HAL_Delay(delay);
+  HAL_GPIO_OnPin(ports[1], pins[1]);
   HAL_GPIO_OnPin(ports[3], pins[3]);
   HAL_Delay(delay);
-  HAL_GPIO_OffPin(ports[2], pins[2]); // Turn off PA5
-  HAL_GPIO_OffPin(ports[4], pins[4]);
+  HAL_GPIO_OffPin(ports[0], pins[0]); // Turn off PA5
+  HAL_GPIO_OnPin(ports[2], pins[2]);
   HAL_Delay(delay);
-  HAL_GPIO_OffPin(ports[3], pins[3]); // Turn off PA7
+  HAL_GPIO_OffPin(ports[1], pins[1]); // Turn off PA5
+  HAL_GPIO_OffPin(ports[3], pins[3]);
+  HAL_Delay(delay);
+  HAL_GPIO_OffPin(ports[2], pins[2]); // Turn off PA7
+  HAL_Delay(delay);
 }
 /*
 void planeSequence()
@@ -376,30 +408,37 @@ void sequences(int sequence)
     }
     break;
   case 3:
-    for (uint8_t c = 1; c < 8; c++)
+    for (uint8_t c = 1; c < 4; c++)
     {
       followSequence();
     }
     break;
   case 4:
+    for (uint8_t c = 1; c < 8; c++)
+    {
+      fastFlash();
+    }
+    break;
+    
+  case 5:
     for (uint8_t c = 1; c < 3; c++)
     {
       circleSequence();
     }
     break;
-  case 5:
+  case 6:
   for (uint8_t c = 1; c < 3; c++)
     {
     randomSequence();
     }
     break;
-  case 6:
+  case 7:
   for (uint8_t c = 1; c < 4; c++)
     {
     rouletteSequence();
     }
     break;
-  case 7:
+  case 8:
     for (uint8_t c = 1; c < 4; c++)
     {
       blinkSequence();
@@ -433,7 +472,7 @@ int main(void)
     //rouletteSequence();
   
     //planeSequence();
-    for (uint8_t c = 1; c < 7; c++)
+    for (uint8_t c = 1; c < 8; c++)
     {
       sequences(c);
       //HAL_Delay(delay2);
@@ -441,12 +480,12 @@ int main(void)
   
     for (uint8_t c2 = 0; c2 < timesSecretCode; c2++)
     {
-      sequences(7); // Blink Sequence 3 times
+      sequences(8); // Blink Sequence 3 times
       ledsOff();
       HAL_Delay(interimPeriod);
       HEX2NIBBLE();
       HAL_Delay(interimPeriod);
-      sequences(5);
+      sequences(4);
     }/**/
   }
 }
