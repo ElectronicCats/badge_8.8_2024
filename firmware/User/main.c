@@ -38,10 +38,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* Private user code ---------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-static void APP_LedConfig(void);
 uint8_t delay0 = 10, delay = 50, delay2 = 250, delay3 = 100, delay4 = 25, delay5=1000;
 uint16_t delay1 = 600, interimPeriod = 100;
 uint8_t times = 0, init = 0;
@@ -50,10 +46,19 @@ uint8_t ledQuantity = 5;          //Set how many LED have your Shitty Addon
 
 // Pin Definition 
 uint32_t ports[] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOF};
-uint8_t pins[] = {0x0040, 0x0080, 0x0002, 0x0020, 0x0001}; // PA6, PA7, PA1, PA5, PF0 - Each Badge have its own order
+uint8_t pins[] = {0x0040, 0x0020, 0x0002, 0x0080, 0x0001}; // PA6, PA5, PA1, PA7, PF0 - Each Badge have its own order. Indicator=PA6
+uint8_t indicatorPos=0;
 
-uint8_t message[] = {"TPX"};    //Secret Code
+uint8_t message[] = {"8.8"};    //Secret Code
 
+
+/* Private user code ---------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+static void APP_LedConfig(void);
+
+
+// Functions
 void HEX2NIBBLE()
 {
   uint8_t nibble1, nibble2;
@@ -72,7 +77,7 @@ void HEX2NIBBLE()
 void setBits(uint8_t nibble)
 {
   uint8_t nibbleAux = nibble;
-  for (uint8_t i = 0; i < 4; i++)
+  for (uint8_t i = 1; i < 5; i++)
   {
     if (nibbleAux & 0x01) // LED ON
     {
@@ -91,14 +96,61 @@ void blinkBitNumber()
 {
   for (uint8_t i = 0; i < 2; i++)
   {
-    HAL_GPIO_OnPin(GPIOF, GPIO_PIN_0);
+    HAL_GPIO_OnPin(ports[indicatorPos], pins[indicatorPos]);
     HAL_Delay(delay2);
-    HAL_GPIO_OffPin(GPIOF, GPIO_PIN_0);
+    HAL_GPIO_OffPin(ports[indicatorPos], pins[indicatorPos]);
     HAL_Delay(delay2);
   }
 }
 
 // Sequence 1
+void crossSequence()
+{
+  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PA5
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[1], pins[1]);
+  HAL_GPIO_OnPin(ports[3], pins[3]);
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[3], pins[3]);
+  HAL_GPIO_OnPin(ports[2], pins[2]);
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[2], pins[2]);
+  HAL_GPIO_OnPin(ports[4], pins[4]);
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[4], pins[4]); // Turn off PF0
+  HAL_Delay(delay2);
+}
+
+void crossSequence2()
+{
+  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PF0
+  HAL_GPIO_OnPin(ports[3], pins[3]); // Start with PA7
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[1], pins[1]);
+  HAL_GPIO_OffPin(ports[3], pins[3]);
+  HAL_GPIO_OnPin(ports[2], pins[2]);
+  HAL_GPIO_OnPin(ports[4], pins[4]);
+  HAL_Delay(delay2);
+  HAL_GPIO_OffPin(ports[2], pins[2]);
+  HAL_GPIO_OffPin(ports[4], pins[4]);
+}
+
+void followSequence()
+{
+  HAL_GPIO_OnPin(ports[1], pins[1]); // Start with PA5
+  HAL_Delay(delay);
+  HAL_GPIO_OnPin(ports[2], pins[2]);
+  HAL_GPIO_OnPin(ports[4], pins[4]);
+  HAL_Delay(delay);
+  HAL_GPIO_OffPin(ports[1], pins[1]); // Turn off PA5
+  HAL_GPIO_OnPin(ports[3], pins[3]);
+  HAL_Delay(delay);
+  HAL_GPIO_OffPin(ports[2], pins[2]); // Turn off PA5
+  HAL_GPIO_OffPin(ports[4], pins[4]);
+  HAL_Delay(delay);
+  HAL_GPIO_OffPin(ports[3], pins[3]); // Turn off PA7
+}
+/*
 void planeSequence()
 {
   HAL_GPIO_OnPin(ports[1], pins[1]);
@@ -159,7 +211,7 @@ void rowSequence()
   HAL_GPIO_OffPin(ports[4], pins[4]);
   HAL_Delay(delay3);
 }
-
+*/
 // Seqeuence 7
 void blinkSequence()
 {
@@ -170,7 +222,7 @@ void blinkSequence()
 }
 
 //Sequence 4
-void allLEDs()
+void circleSequence()
 {
   int8_t i = 0;
   //Forward
@@ -207,14 +259,6 @@ void allLEDs()
 
 }
 
-/* Unused sequence
-void startSequence()
-{
-  HAL_GPIO_OnPin(GPIOF, GPIO_PIN_0); // 1
-  HAL_Delay(delay);
-  HAL_GPIO_OnPin(GPIOA, GPIO_PIN_1); // 12
-  HAL_Delay(delay);
-}*/
 
 //General Function to turn Off all LEDs
 void ledsOff()
@@ -287,8 +331,15 @@ void randomSequence()
 //Sequence 6
 void rouletteSequence()
 {
+  uint8_t i=0;    //initial
+  /*uint8_t f=4;    //final
+  if (indicatorPos==0)
+  {
+    i=1;
+    f=5;
+  }*/
+
   //Forward
-  uint8_t i=0;
   HAL_GPIO_OnPin(ports[i], pins[i]);
   HAL_Delay(delay);
   for (i; i < 5; i++)
@@ -313,24 +364,27 @@ void sequences(int sequence)
   switch (sequence)
   {
   case 1:
-     planeSequence();
+  for (uint8_t c = 1; c < 5; c++)
+    {
+      crossSequence();
+    }
     break;
   case 2:
     for (uint8_t c = 1; c < 8; c++)
     {
-      planeSequence2();
+      crossSequence2();
     }
     break;
   case 3:
     for (uint8_t c = 1; c < 8; c++)
     {
-      rowSequence();
+      followSequence();
     }
     break;
   case 4:
     for (uint8_t c = 1; c < 3; c++)
     {
-      allLEDs();
+      circleSequence();
     }
     break;
   case 5:
